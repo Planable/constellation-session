@@ -1,0 +1,13 @@
+<template name="Constellation_session_menu">
+  <div style="text-indent: 8px;">ReactiveDict: 
+    <select class="Constellation_reactive_dictionaries">
+      {{#each dictionaries}}
+        <option selected={{selected}}>{{name}}</option>
+      {{/each}}
+    </select>
+  </div>
+</template>
+
+<template name="Constellation_session_main">
+  {{> editableJSON observe=reactivedict store="constellation_session"}}
+</template>
