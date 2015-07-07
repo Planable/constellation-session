@@ -1,8 +1,8 @@
 // Hook in to constellation UI
 
-var Constellation = Package["babrahams:constellation"];
+var Constellation = Package["babrahams:constellation"].API;
 	
-Constellation.API.addTab({
+Constellation.addTab({
   name: 'Session',
   mainContentTemplate: 'Constellation_session_main',
   menuContentTemplate: 'Constellation_session_menu'
