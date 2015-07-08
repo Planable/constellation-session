@@ -14,10 +14,10 @@ var currentDict = new ReactiveVar({
   dict:Session
 });
 
-// Check if someone has added something to the Session every 5 seconds
+// Check if someone has added something to the Session every 3 seconds
 Meteor.setInterval(function () {
   ReactiveDictDep.changed();
-}, 5000);
+}, 3000);
 
 EditableJSON.afterUpdate(function (store, action, JSONbefore, documentsUpdated) {
   // Make the changes
