@@ -1,6 +1,6 @@
 // Hook in to constellation UI
 
-var Constellation = Package["babrahams:constellation"].API;
+var Constellation = Package["constellation:console"].API;
     
 Constellation.addTab({
   name: 'Session',
