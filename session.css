@@ -1,4 +1,8 @@
 #Constellation .Constellation_reactive_dictionaries { 
   color: rgba(0,0,0,0.8);
   opacity: 0.8;
+  height: 16px;
+  font-size: smaller;
+  max-width: 150px;
+  padding: 0;
 }
