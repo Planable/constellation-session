@@ -1,8 +1,14 @@
+<template name="Constellation_session_header">
+  <div class="Constellation_counter"> 
+    {{keyCount}}
+  </div>
+</template>
+
 <template name="Constellation_session_menu">
   <div style="text-indent: 8px;">ReactiveDict:
     <select class="Constellation_reactive_dictionaries">
       {{#each dictionaries}}
-        <option selected={{selected}}>{{name}}</option>
+        <option selected={{selected}} value="{{name}}">{{name}}</option>
       {{/each}}
     </select>
   </div>

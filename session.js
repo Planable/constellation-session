@@ -4,8 +4,9 @@ var Constellation = Package["babrahams:constellation"].API;
     
 Constellation.addTab({
   name: 'Session',
-  mainContentTemplate: 'Constellation_session_main',
-  menuContentTemplate: 'Constellation_session_menu'
+  headerContentTemplate: 'Constellation_session_header',
+  menuContentTemplate: 'Constellation_session_menu',
+  mainContentTemplate: 'Constellation_session_main'
 });
 
 var ReactiveDictDep = new Tracker.Dependency;
@@ -15,12 +16,13 @@ var currentDict = new ReactiveVar({
 });
 
 if (Object.observe) {
+  // We're not going to get newly created reactive dictionaries this way until a change is made
   Tracker.autorun(function () {
     var cd = currentDict.get();
-    Object.observe(cd.dict.keys, function (changes) {
+    Object.observe(cd.dict.keys, _.throttle(function () {
 	  // This does a double redraw of the editableJSON for Session, because the editableJSON is stored in the Session
       ReactiveDictDep.changed();
-    });
+    }, 3000));
   });
 }
 else {
@@ -32,11 +34,11 @@ else {
       var change = false;
       var siftedDict = {};
       var currentJSON = EditableJSON.retrieve('constellation_session');
-      _.each(currentDict.get().dict.keys, function (val, key) {
+      _.each(currentDict.get().dict.keys || {}, function (val, key) {
         if ((key.indexOf('Constellation_') > -1) || (key.indexOf('Meteor') > -1) || (key.indexOf('Temple_') > -1) || key === "Constellation" || key === 'editableJSON' || _.isUndefined(val) || val === "undefined") {
           return;  
         }
-        if (_.isUndefined(currentJSON[key]) || currentJSON[key] !== EJSON.parse(val)) {
+        if (_.isUndefined(currentJSON[key]) || EJSON.stringify(currentJSON[key]) !== val) {
           change = true;
         }
       });
@@ -45,6 +47,10 @@ else {
       }
     }
   }, 3000);
+}
+
+var excludedKey = function (val, key) {
+  return (key.indexOf('Constellation_') > -1) || (key.indexOf('Meteor') > -1) || (key.indexOf('Temple_') > -1) || key === "Constellation" || key === 'editableJSON' || _.isUndefined(val) || val === "undefined";
 }
 
 EditableJSON.afterUpdate(function (store, action, JSONbefore, documentsUpdated) {
@@ -64,16 +70,23 @@ EditableJSON.afterUpdate(function (store, action, JSONbefore, documentsUpdated) 
   ReactiveDictDep.changed();
 },'constellation_session');
 
+Template.Constellation_session_header.helpers({
+  keyCount: function () {
+	ReactiveDictDep.depend();
+	return Object.keys(_.filter(currentDict.get().dict.keys, function (val, key) { return !excludedKey(val, key); })).length;
+  }
+});
+
 Template.Constellation_session_main.helpers({
   reactivedict: function () {
     ReactiveDictDep.depend();
     var siftedDict = {};
     _.each(currentDict.get().dict.keys, function (val, key) {
-      if ((key.indexOf('Constellation_') > -1) || (key.indexOf('Meteor') > -1) || (key.indexOf('Temple_') > -1) || key === "Constellation" || key === 'editableJSON' || _.isUndefined(val) || val === "undefined") {
-        return;  
-      }
+      if (excludedKey(val, key)) {
+		return;
+	  }
       siftedDict[key] = EJSON.parse(val);
-    }); console.log('redraw');
+    });
     return siftedDict;
   }
 });
@@ -100,7 +113,7 @@ Template.Constellation_session_menu.helpers({
 });
 
 Template.Constellation_session_menu.events({
-  'click option' : function () {
-    currentDict.set(this);
+  'change .Constellation_reactive_dictionaries' : function (evt, tmpl) {
+    currentDict.set(Blaze.getData(tmpl.$(evt.target).find(':selected')[0]));
   }
 });
