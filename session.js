@@ -50,7 +50,7 @@ else {
 }
 
 var excludedKey = function (val, key) {
-  var excluded = Constellation.excludedSessionVariables();
+  var excluded = Constellation.excludedSessionKeys();
   var keyExcluded = _.find(excluded, function (prefix) {
 	return key.indexOf(prefix) > -1; 
   });
