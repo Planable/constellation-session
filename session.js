@@ -35,7 +35,7 @@ else {
       var siftedDict = {};
       var currentJSON = EditableJSON.retrieve('constellation_session');
       _.each(currentDict.get().dict.keys || {}, function (val, key) {
-        if ((key.indexOf('Constellation_') > -1) || (key.indexOf('Meteor') > -1) || (key.indexOf('Temple_') > -1) || key === "Constellation" || key === 'editableJSON' || _.isUndefined(val) || val === "undefined") {
+        if (excludedKey(val,key)) {
           return;  
         }
         if (_.isUndefined(currentJSON[key]) || EJSON.stringify(currentJSON[key]) !== val) {
@@ -50,7 +50,11 @@ else {
 }
 
 var excludedKey = function (val, key) {
-  return (key.indexOf('Constellation_') > -1) || (key.indexOf('Meteor') > -1) || (key.indexOf('Temple_') > -1) || key === "Constellation" || key === 'editableJSON' || _.isUndefined(val) || val === "undefined";
+  var excluded = Constellation.excludedSessionVariables();
+  var keyExcluded = _.find(excluded, function (prefix) {
+	return key.indexOf(prefix) > -1; 
+  });
+  return keyExcluded || _.isUndefined(val) || val === "undefined";
 }
 
 EditableJSON.afterUpdate(function (store, action, JSONbefore, documentsUpdated) {
