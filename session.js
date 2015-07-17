@@ -26,10 +26,12 @@ if (Object.observe) {
   });
 }
 else {
+  var firstRun = true;
   // Check if someone has added something to the Session every 3 seconds
   Meteor.setInterval(function () {
     var currentTab = Constellation.getCurrentTab();
-    if (currentTab && currentTab.id === 'Session') {
+    if ((currentTab && currentTab.id === 'Session') || firstRun) {
+	  var firstRun = false;
       // This could get heavy for large reactive dictionaries, so we're going for every 3 seconds
       var change = false;
       var siftedDict = {};
