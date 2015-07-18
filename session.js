@@ -15,12 +15,11 @@ var currentDict = new ReactiveVar({
   dict: Session
 });
 
-if (Object.observe) {
   // We're not going to get newly created reactive dictionaries this way until a change is made
+if (Object.observe) {
   Tracker.autorun(function () {
     var cd = currentDict.get();
     Object.observe(cd.dict.keys, _.throttle(function () {
-	  // This does a double redraw of the editableJSON for Session, because the editableJSON is stored in the Session
       ReactiveDictDep.changed();
     }, 3000));
   });
@@ -101,14 +100,16 @@ Template.Constellation_session_menu.helpers({
   dictionaries: function () {
     ReactiveDictDep.depend();
     var dictionaries = [];
-    for (var member in window) {
+	// for ... in gets deprecated warning in Chrome
+    // for (var member in window) { 
+	_.each(Object.keys(window), function (member) {
       if (window[member] instanceof ReactiveDict) {
         dictionaries.push({
           name: member,
           dict: window[member]
         });
       }
-    }
+    });
     return dictionaries;
   },
   selected: function () {
