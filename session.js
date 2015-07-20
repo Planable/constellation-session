@@ -70,7 +70,9 @@ EditableJSON.afterUpdate(function (store, action, JSONbefore, documentsUpdated) 
   var missingKeys = _.difference(_.keys(JSONbefore),_.keys(this));
   _.each(missingKeys, function (key) {
     var cd = currentDict.get();
-    delete cd.dict.keys[key];
+	cd.dict.set(key, undefined); // To maintain reactivity
+	Tracker.flush();
+    delete cd.dict.keys[key]; // Doesn't maintain reactivity by itself
   });
   ReactiveDictDep.changed();
 },'constellation_session');
