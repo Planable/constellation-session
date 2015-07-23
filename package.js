@@ -12,7 +12,7 @@ Package.onUse(function(api) {
 
   api.use(['templating','session','blaze','underscore','ejson','tracker','reactive-var','reactive-dict'], 'client');
   api.use('constellation:console@1.2.0', 'client');
-  api.use('babrahams:editable-json@0.5.6', 'client');
+  api.use('babrahams:editable-json@0.5.7', 'client');
 
   api.addFiles('session.css','client');
   api.addFiles('session.html','client');
