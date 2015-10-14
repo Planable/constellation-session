@@ -34,6 +34,7 @@ else {
       // This could get heavy for large reactive dictionaries, so we're going for every 3 seconds
       var change = false;
       var siftedDict = {};
+      EditableJSON = Package['babrahams:editable-json'].EditableJSON;
       var currentJSON = EditableJSON && EditableJSON.retrieve('constellation_session') || {};
       _.each(currentDict && currentDict.get().dict.keys || {}, function (val, key) {
         if (excludedKey(val,key)) {
@@ -57,6 +58,8 @@ var excludedKey = function (val, key) {
   });
   return keyExcluded || _.isUndefined(val) || val === "undefined";
 }
+
+EditableJSON = Package['babrahams:editable-json'].EditableJSON;
 
 EditableJSON.afterUpdate(function (store, action, JSONbefore, documentsUpdated) {
   // Make the changes
