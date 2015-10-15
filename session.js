@@ -108,7 +108,7 @@ Template.Constellation_session_menu.helpers({
 	// for ... in gets deprecated warning in Chrome
     // for (var member in window) { 
 	_.each(Object.keys(window), function (member) {
-      if (window[member] instanceof ReactiveDict) {
+      if (member !== 'webkitStorageInfo' && member !=='webkitIndexedDB' && window[member] instanceof ReactiveDict) {
         dictionaries.push({
           name: member,
           dict: window[member]
