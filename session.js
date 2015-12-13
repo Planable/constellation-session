@@ -6,7 +6,8 @@ Constellation.addTab({
   name: 'Session',
   headerContentTemplate: 'Constellation_session_header',
   menuContentTemplate: 'Constellation_session_menu',
-  mainContentTemplate: 'Constellation_session_main'
+  mainContentTemplate: 'Constellation_session_main',
+  guideContentTemplate: 'Constellation_session_guide'
 });
 
 var ReactiveDictDep = new Tracker.Dependency;
