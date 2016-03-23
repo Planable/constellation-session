@@ -1,6 +1,6 @@
 Package.describe({
   name: 'constellation:session',
-  version: '0.4.0',
+  version: '0.4.1',
   summary: 'Session variable editor plugin for Constellation',
   git: 'https://github.com/JackAdams/constellation-session.git',
   documentation: 'README.md',
