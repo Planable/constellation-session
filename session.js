@@ -1,7 +1,7 @@
 // Hook in to constellation UI
 
 var Constellation = Package["constellation:console"].API;
-    
+
 Constellation.addTab({
   name: 'Session',
   headerContentTemplate: 'Constellation_session_header',
@@ -16,46 +16,36 @@ var currentDict = new ReactiveVar({
   dict: Session
 });
 
-  // We're not going to get newly created reactive dictionaries this way until a change is made
-if (Object.observe) {
-  Tracker.autorun(function () {
-    var cd = currentDict.get();
-    Object.observe(cd.dict.keys, _.throttle(function () {
-      ReactiveDictDep.changed();
-    }, 3000));
-  });
-}
-else {
-  var firstRun = true;
-  // Check if someone has added something to the Session every 3 seconds
-  Meteor.setInterval(function () {
-    var currentTab = Constellation && Constellation.getCurrentTab();
-    if ((currentTab && currentTab.id === 'Session') || firstRun) {
-	  firstRun = false;
-      // This could get heavy for large reactive dictionaries, so we're going for every 3 seconds
-      var change = false;
-      var siftedDict = {};
-      EditableJSON = Package['babrahams:editable-json'].EditableJSON;
-      var currentJSON = EditableJSON && EditableJSON.retrieve('constellation_session') || {};
-      _.each(currentDict && currentDict.get().dict.keys || {}, function (val, key) {
-        if (excludedKey(val,key)) {
-          return;  
-        }
-        if (_.isUndefined(currentJSON[key]) || EJSON.stringify(currentJSON[key]) !== val) {
-          change = true;
-        }
-      });
-      if (change) {
-        ReactiveDictDep.changed();
+// We're not going to get newly created reactive dictionaries this way until a change is made
+var firstRun = true;
+// Check if someone has added something to the Session every 3 seconds
+Meteor.setInterval(function () {
+  var currentTab = Constellation && Constellation.getCurrentTab();
+  if ((currentTab && currentTab.id === 'Session') || firstRun) {
+  firstRun = false;
+    // This could get heavy for large reactive dictionaries, so we're going for every 3 seconds
+    var change = false;
+    var siftedDict = {};
+    EditableJSON = Package['babrahams:editable-json'].EditableJSON;
+    var currentJSON = EditableJSON && EditableJSON.retrieve('constellation_session') || {};
+    _.each(currentDict && currentDict.get().dict.keys || {}, function (val, key) {
+      if (excludedKey(val,key)) {
+        return;
       }
+      if (_.isUndefined(currentJSON[key]) || EJSON.stringify(currentJSON[key]) !== val) {
+        change = true;
+      }
+    });
+    if (change) {
+      ReactiveDictDep.changed();
     }
-  }, 3000);
-}
+  }
+}, 3000);
 
 var excludedKey = function (val, key) {
   var excluded = Constellation.excludedSessionKeys();
   var keyExcluded = _.find(excluded, function (prefix) {
-	return key.indexOf(prefix) > -1; 
+	return key.indexOf(prefix) > -1;
   });
   return keyExcluded || _.isUndefined(val) || val === "undefined";
 }
@@ -107,7 +97,7 @@ Template.Constellation_session_menu.helpers({
     ReactiveDictDep.depend();
     var dictionaries = [];
 	// for ... in gets deprecated warning in Chrome
-    // for (var member in window) { 
+    // for (var member in window) {
 	_.each(Object.keys(window), function (member) {
       if (member !== 'webkitStorageInfo' && member !=='webkitIndexedDB' && window[member] instanceof ReactiveDict) {
         dictionaries.push({
