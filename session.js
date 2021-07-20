@@ -1,19 +1,19 @@
 // Hook in to constellation UI
 
-var Constellation = Package["constellation:console"].API;
+var Constellation = Package["planable:console"].API;
 
 Constellation.addTab({
-  name: 'Session',
-  headerContentTemplate: 'Constellation_session_header',
-  menuContentTemplate: 'Constellation_session_menu',
-  mainContentTemplate: 'Constellation_session_main',
-  guideContentTemplate: 'Constellation_session_guide'
+  name: "Session",
+  headerContentTemplate: "Constellation_session_header",
+  menuContentTemplate: "Constellation_session_menu",
+  mainContentTemplate: "Constellation_session_main",
+  guideContentTemplate: "Constellation_session_guide",
 });
 
-var ReactiveDictDep = new Tracker.Dependency;
+var ReactiveDictDep = new Tracker.Dependency();
 var currentDict = new ReactiveVar({
   name: "Session",
-  dict: Session
+  dict: Session,
 });
 
 // We're not going to get newly created reactive dictionaries this way until a change is made
@@ -21,21 +21,28 @@ var firstRun = true;
 // Check if someone has added something to the Session every 3 seconds
 Meteor.setInterval(function () {
   var currentTab = Constellation && Constellation.getCurrentTab();
-  if ((currentTab && currentTab.id === 'Session') || firstRun) {
-  firstRun = false;
+  if ((currentTab && currentTab.id === "Session") || firstRun) {
+    firstRun = false;
     // This could get heavy for large reactive dictionaries, so we're going for every 3 seconds
     var change = false;
     var siftedDict = {};
-    EditableJSON = Package['babrahams:editable-json'].EditableJSON;
-    var currentJSON = EditableJSON && EditableJSON.retrieve('constellation_session') || {};
-    _.each(currentDict && currentDict.get().dict.keys || {}, function (val, key) {
-      if (excludedKey(val,key)) {
-        return;
+    EditableJSON = Package["planable:editable-json"].EditableJSON;
+    var currentJSON =
+      (EditableJSON && EditableJSON.retrieve("constellation_session")) || {};
+    _.each(
+      (currentDict && currentDict.get().dict.keys) || {},
+      function (val, key) {
+        if (excludedKey(val, key)) {
+          return;
+        }
+        if (
+          _.isUndefined(currentJSON[key]) ||
+          EJSON.stringify(currentJSON[key]) !== val
+        ) {
+          change = true;
+        }
       }
-      if (_.isUndefined(currentJSON[key]) || EJSON.stringify(currentJSON[key]) !== val) {
-        change = true;
-      }
-    });
+    );
     if (change) {
       ReactiveDictDep.changed();
     }
@@ -45,12 +52,12 @@ Meteor.setInterval(function () {
 var excludedKey = function (val, key) {
   var excluded = Constellation.excludedSessionKeys();
   var keyExcluded = _.find(excluded, function (prefix) {
-	return key.indexOf(prefix) > -1;
+    return key.indexOf(prefix) > -1;
   });
   return keyExcluded || _.isUndefined(val) || val === "undefined";
-}
+};
 
-EditableJSON = Package['babrahams:editable-json'].EditableJSON;
+EditableJSON = Package["planable:editable-json"].EditableJSON;
 
 EditableJSON.afterUpdate(function (store, action, JSONbefore, documentsUpdated) {
   // Make the changes
